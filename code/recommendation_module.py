@@ -85,6 +85,7 @@ class RecommendationModule:
             title = root.find('title').text
             body = root.find('body').text
             docid = int(root.find('id').text)
+            # docid = root.find('id').text
             tags = jieba.analyse.extract_tags(title + '。' + body, topK=topK, withWeight=True)
             #tags = jieba.analyse.extract_tags(title, topK=topK, withWeight=True)
             cleaned_dict = {}
@@ -115,12 +116,14 @@ class RecommendationModule:
         similarity_matrix = pd.DataFrame(tmp, index = dt_matrix.index.tolist(), columns = dt_matrix.index.tolist())
         for i in similarity_matrix.index:
             tmp = [int(i),[]]
+            # tmp = [i,[]]
             j = 0
             while j < k:
                 max_col = similarity_matrix.loc[i].idxmax(axis = 1)
                 similarity_matrix.loc[i][max_col] =  -1
                 if max_col != i:
                     tmp[1].append(int(max_col)) #max column name
+                    # tmp[1].append(max_col) #max column name
                     j += 1
             self.k_nearest.append(tmp)
     

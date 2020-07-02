@@ -77,7 +77,7 @@ class SearchEngine:
         return(c.fetchone())
     
     def result_by_BM25(self, sentence):
-        seg_list = jieba.lcut(sentence, cut_all=False)
+        seg_list = jieba.lcut_for_search(sentence)
         n, cleaned_dict = self.clean_list(seg_list)
         BM25_scores = {}
         for term in cleaned_dict.keys():
@@ -87,12 +87,12 @@ class SearchEngine:
             df = r[1]
             w = math.log2((self.N - df + 0.5) / (df + 0.5))
             docs = r[2].split('\n')
-            for doc in docs:
+            for doc in docs: # 对每一个docs计算分数
                 docid, date_time, tf, ld = doc.split('\t')
                 docid = int(docid)
                 tf = int(tf)
                 ld = int(ld)
-                s = (self.K1 * tf * w) / (tf + self.K1 * (1 - self.B + self.B * ld / self.AVG_L))
+                s = (self.K1 * tf * w) / (tf + self.K1 * (1 - self.B + self.B * ld / self.AVG_L)) # 计算某个词项t在文档d中的得分
                 if docid in BM25_scores:
                     BM25_scores[docid] = BM25_scores[docid] + s
                 else:
@@ -105,7 +105,7 @@ class SearchEngine:
             return 1, BM25_scores
     
     def result_by_time(self, sentence):
-        seg_list = jieba.lcut(sentence, cut_all=False)
+        seg_list = jieba.lcut_for_search(sentence)
         n, cleaned_dict = self.clean_list(seg_list)
         time_scores = {}
         for term in cleaned_dict.keys():
@@ -130,7 +130,7 @@ class SearchEngine:
             return 1, time_scores
     
     def result_by_hot(self, sentence):
-        seg_list = jieba.lcut(sentence, cut_all=False)
+        seg_list = jieba.lcut_for_search(sentence)
         n, cleaned_dict = self.clean_list(seg_list)
         hot_scores = {}
         for term in cleaned_dict.keys():
