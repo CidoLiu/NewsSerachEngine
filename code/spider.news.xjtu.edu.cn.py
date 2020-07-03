@@ -25,7 +25,7 @@ headers = {'User-Agent': user_agent}
 # data = data.encode('ascii')
 
 keyword = '交'  # 用于判断乱码，一般来说，交大新闻中肯定包括了‘交’
-
+root = 'http://news.xjtu.edu.cn'
 
 def get_one_page_news(page_url):
     '''获取某一新闻列表页上的全部新闻摘要[date_time, url, title]
@@ -35,7 +35,7 @@ def get_one_page_news(page_url):
         返回当前页面上所有新闻列表List[List[]]，列表中每一个元素为一条新闻的[date_time, url, title]
     '''
     # page_url = 'http://news.xjtu.edu.cn/xyzs/21.htm'
-    root = 'http://news.xjtu.edu.cn'
+    
     req = urllib.request.Request(page_url, headers=headers)
 
     try:
@@ -72,28 +72,44 @@ def get_one_page_news(page_url):
 
         news_info = [date_time, url, title]
         news_pool.append(news_info)
-    return news_pool
+
+    # next_url = soup.find('a', class_='Next').get('href') # zyxw/518.htm
+    # next_url = root +'/' +next_url
+
+    next = soup.find('a', class_='Next')
+    if next is None:
+        print('Next page is None')
+        return news_pool, ''
+    next_url = next.get('href')
+    next_url = root +'/' +next_url
+    # print('Next:'+next_url)
+
+    return news_pool, next_url
 
 
 def get_news_pool(news_category):
     '''获取新闻列表池
     Args:
-        news_category:为一个固定列表，指定需要爬取的新闻分类和每类新闻的页面
+        news_category:为一个固定列表，指定需要爬取的新闻分类
     Returns:
         返回一个新闻列表List[List[]]，列表中每一个元素为一条新闻的[date_time, url, title]
     '''
     news_pool = []
     for category in news_category:
-        page_index = category[1]
-        # begin = category[1]
-        end = category[2]
-        while page_index < end:
-            # http://news.xjtu.edu.cn/xyzs/21.htm
-            page_url = 'http://news.xjtu.edu.cn/' + \
-                category[0]+'/'+str(page_index)+'.htm'
-            print('Extracting news urls at '+category[0]+str(page_index))
-            news_pool += get_one_page_news(page_url)
-            page_index += 1
+        url = root + '/' + category + '.htm'
+        while len(url) != 0:
+            news_pool, url = get_one_page_news(url)
+            print('Extracting news urls at '+ url)
+        # page_index = category
+        # # begin = category[1]
+        # end = category[2]
+        # while page_index < end:
+        #     # http://news.xjtu.edu.cn/xyzs/21.htm
+        #     page_url = 'http://news.xjtu.edu.cn/' + \
+        #         category[0]+'/'+str(page_index)+'.htm'
+        #     print('Extracting news urls at '+category[0]+str(page_index))
+        #     news_pool += get_one_page_news(page_url)
+        #     page_index += 1
     return news_pool
 
 
@@ -173,19 +189,16 @@ if __name__ == '__main__':
     config = configparser.ConfigParser()
     config.read('../config.ini', 'utf-8')
 
-    news_category = [['zyxw', 1, 518],
-                    ['jyjx', 1, 65],
-                    ['xyzs', 1, 21],
-                    ['kydt', 1, 80]]
-    
-    # news_category = [['zyxw', 516, 518],
-    #                  ['jyjx', 64, 65]]
-    # news_pool=get_news_pool(news_category)
-    # print(news_pool)
+    # news_category = [['zyxw', 1, 518],
+    #                 ['jyjx', 1, 65],
+    #                 ['xyzs', 1, 21],
+    #                 ['kydt', 1, 80]]
+
+    news_category = ['zyxw','jyjx','xyzs', 'kydt']
 
     news_pool = get_news_pool(news_category)
     print('Starting to crawl %d xjtunews' % len(news_pool))
     # doc_dir_path = config['DEFAULT']['doc_dir_path']+'chinanews/'
-    crawl_news(news_pool, 140, config['DEFAULT']
+    crawl_news(news_pool, 20, config['DEFAULT']
                ['doc_dir_path'], config['DEFAULT']['doc_encoding'])
     print('done!')
