@@ -1,5 +1,6 @@
 #Data
 *.xml
+*.db
 
 # Windows image file caches
 Thumbs.db
