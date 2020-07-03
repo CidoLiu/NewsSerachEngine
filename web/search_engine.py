@@ -77,7 +77,7 @@ class SearchEngine:
         return(c.fetchone())
     
     def result_by_BM25(self, sentence):
-        seg_list = jieba.lcut_for_search(sentence)
+        seg_list = jieba.lcut(sentence, cut_all=True)
         n, cleaned_dict = self.clean_list(seg_list)
         BM25_scores = {}
         for term in cleaned_dict.keys():

@@ -87,17 +87,15 @@ class IndexModule:
     def construct_postings_lists(self):
         config = configparser.ConfigParser()
         config.read(self.config_path, self.config_encoding)
-        AVG_L = 0  # 新闻的平均长度
-
         files = listdir(config['DEFAULT']['doc_dir_path'])
+        AVG_L = 0
         for i in files:
             root = ET.parse(config['DEFAULT']['doc_dir_path'] + i).getroot()
             title = root.find('title').text
             body = root.find('body').text
-            # docid = int(root.find('id').text)
-            docid = root.find('id').text
+            docid = int(root.find('id').text)
             date_time = root.find('datetime').text
-            seg_list = jieba.lcut_for_search(title + '。' + body)
+            seg_list = jieba.lcut(title + '。' + body, cut_all=False)
 
             ld, cleaned_dict = self.clean_list(seg_list)
 
@@ -111,7 +109,6 @@ class IndexModule:
                     self.postings_lists[key][1].append(d)
                 else:
                     self.postings_lists[key] = [1, [d]]  # [df, [Doc]]
-
         AVG_L = AVG_L / len(files)
         config.set('DEFAULT', 'N', str(len(files)))
         config.set('DEFAULT', 'avg_l', str(AVG_L))

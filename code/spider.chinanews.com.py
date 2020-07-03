@@ -182,10 +182,11 @@ if __name__ == '__main__':
     config = configparser.ConfigParser()
     config.read('../config.ini', 'utf-8')
 
-    delta = timedelta(days=-10)
+    delta = timedelta(days=-5)
     end_date = date.today()
     start_date = end_date + delta  # 5天前
     news_pool = get_news_pool(start_date, end_date)
+    news_pool = list(set(news_pool))
     print('Starting to crawl %d chinanews' % len(news_pool))
     # doc_dir_path = config['DEFAULT']['doc_dir_path']+'chinanews/'
     crawl_news(news_pool, 140, config['DEFAULT']

@@ -131,7 +131,7 @@ def high_search(key):
         print('high search error')
 
 
-@app.route('/search/<id>/', methods=['GET', 'POST'])
+@app.route('/search/<id>/', methods=['GET', 'POST']) # 把函数绑定到 URL
 def content(id):
     try:
         doc = find([id], extra=True)

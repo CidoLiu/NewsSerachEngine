@@ -45,10 +45,10 @@ def get_one_page_news(page_url):
     except socket.timeout as err:
         print('socket.timeout')
         print(err)
-        return []
+        return [],''
     except Exception as e:
         print("-----%s:%s %s-----" % (type(e), e, page_url))
-        return []
+        return [],''
 
     soup = BeautifulSoup(html, "html.parser")
 
@@ -66,7 +66,11 @@ def get_one_page_news(page_url):
         url = a.get('href')
         # if root in url:
         #     url = url[len(root):]
-        url = url.replace('..', root)
+        if '..' in url:
+            url = url.replace('..', root) # ../info/1004/4750.htm
+        else:
+            url = root + '/' +url # info/1033/137388.htm
+        
         date_time = cite.get_text()
         date_time = date_time[1:-1]  # 删掉日期前的[]
 
@@ -80,8 +84,8 @@ def get_one_page_news(page_url):
     if next is None:
         print('Next page is None')
         return news_pool, ''
-    next_url = next.get('href')
-    next_url = root +'/' +next_url
+    next_url = next.get('href') # 99.htm
+    # next_url = root +'/' +next_url
     # print('Next:'+next_url)
 
     return news_pool, next_url
@@ -97,8 +101,14 @@ def get_news_pool(news_category):
     news_pool = []
     for category in news_category:
         url = root + '/' + category + '.htm'
-        while len(url) != 0:
-            news_pool, url = get_one_page_news(url)
+        while 'htm' in url:
+            one_page_news_pool, url = get_one_page_news(url)
+            news_pool += one_page_news_pool
+            # url = root + '/' + category + '/' +url
+            if category in url:
+                url = root + '/' +url
+            else:
+                url = root + '/' + category + '/' +url
             print('Extracting news urls at '+ url)
         # page_index = category
         # # begin = category[1]
@@ -197,6 +207,7 @@ if __name__ == '__main__':
     news_category = ['zyxw','jyjx','xyzs', 'kydt']
 
     news_pool = get_news_pool(news_category)
+    news_pool = list(set(news_pool))
     print('Starting to crawl %d xjtunews' % len(news_pool))
     # doc_dir_path = config['DEFAULT']['doc_dir_path']+'chinanews/'
     crawl_news(news_pool, 20, config['DEFAULT']

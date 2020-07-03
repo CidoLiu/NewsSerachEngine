@@ -1,5 +1,5 @@
 # 新闻搜索引擎
-<img src="./news_search_engine3.png" width = "650" align=center />
+<img src="./exhibition.png" width = "650" align=center />
 
 # 使用方法
 1. 安装python 3.4+环境（推荐[Anaconda](https://www.anaconda.com/distribution/)或[Miniconda](https://docs.conda.io/en/latest/miniconda.html)）
@@ -9,9 +9,18 @@
 5. 进入web文件夹，运行main.py文件
 6. 打开浏览器，访问http://127.0.0.1:5000/ 输入关键词开始测试
 
-如果想抓取最新新闻数据并构建索引，一键运行`./code/setup.py`，再按上面的方法测试。
+如果想抓取最新新闻数据并构建索引：
 
-2020.4.5：新增抓取[中国新闻网](http://www.chinanews.com/scroll-news/news1.html)的爬虫程序。先运行`./code/spider.chinanews.com.py`爬取最近5天新闻（约2500条）；然后注释`./code/setup.py`[第38行](https://github.com/01joy/news-search-engine/blob/master/code/setup.py#L38)并运行，自动构建索引。
+1. 运行爬虫`./code/spider.chinanews.com.py`爬取中国新闻网最近5天新闻；运行爬虫`./code/spider.news.xjtu.edu.cn.py`爬取交大新闻网中下新闻。
+2. 运行`./code/setup.py自动构建索引`
+3. 运行`./web/main.py`文件，或者执行`./web/run shell.txt`中的命令（网页模板`./web/templates`有修改时）
+4. 打开浏览器，访问http://127.0.0.1:5000/ 输入关键词开始测试
+
+
+
+**本项目为信息系统建模的一个小作业，感谢原作者提供的代码和文档。**
+
+
 
 # 项目介绍
 1. [和我一起构建搜索引擎（一）简介](http://bitjoy.net/2016/01/04/introduction-to-building-a-search-engine-1/)
