@@ -3,6 +3,8 @@
 Created on Sat Dec 19 11:57:01 2015
 
 @author: bitjoy.net
+
+爬虫搜狐，已不适用。
 """
 
 from bs4 import BeautifulSoup

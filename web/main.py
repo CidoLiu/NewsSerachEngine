@@ -42,21 +42,22 @@ def search():
         global checked
         checked = ['checked="true"', '', '']
         keys = request.form['key_word']
-        #print(keys)
+        print(keys)
         if keys not in ['']:
-            print(time.clock())
+            print(time.process_time())
             flag,page = searchidlist(keys)
             if flag==0:
                 return render_template('search.html', error=False)
             docs = cut_page(page, 0)
-            print(time.clock())
+            print(time.process_time())
             return render_template('high_search.html', checked=checked, key=keys, docs=docs, page=page,
                                    error=True)
         else:
             return render_template('search.html', error=False)
 
-    except:
-        print('search error')
+    except Exception as e:
+        print('search error ', e)
+        return render_template('error.html')
 
 
 def searchidlist(key, selected=0):

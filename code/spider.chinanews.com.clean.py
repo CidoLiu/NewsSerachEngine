@@ -2,10 +2,12 @@
 """
 Created on Sat Apr  4 17:38:38 2020
 
-@author: Zhenlin
-"""
+@author: LiuDongjin
 
-#清理乱码新闻
+【清理（可选）】删除文件夹下的所有乱码新闻，清理乱码新闻。
+
+以“编辑”为关键字，对乱码新闻进行清理。
+"""
 
 import os
 import xml.etree.ElementTree as ET

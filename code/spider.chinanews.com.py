@@ -2,7 +2,9 @@
 """
 Created on Sun Mar 29 17:32:40 2020
 
-@author: Zhenlin
+@author: LiuDongjin
+
+【爬虫】爬取中国新闻网滚动新闻栏目近5天的所有新闻，以xml格式存入本地。
 """
 
 from bs4 import BeautifulSoup
@@ -18,11 +20,6 @@ from os import listdir
 
 user_agent = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'
 headers = {'User-Agent': user_agent}
-# values = {'name': 'Michael Foord',
-#          'location': 'Northampton',
-#          'language': 'Python' }
-#data = urllib.parse.urlencode(values)
-#data = data.encode('ascii')
 
 keyword = '日'  # 用于判断乱码，一般来说，新闻中肯定包括了日期
 
@@ -31,6 +28,7 @@ def get_one_page_news(page_url):
     '''获取某一新闻列表页上的全部新闻摘要[date_time, url, title]
     Args:
         page_url:新闻列表页面的URL
+    
     Returns:
         返回当前页面上所有新闻列表List[List[]]，列表中每一个元素为一条新闻的[date_time, url, title]
     '''
@@ -56,7 +54,6 @@ def get_one_page_news(page_url):
     news_list = soup.find('div', class_="content_list")
     items = news_list.find_all('li')
     for i, item in enumerate(items):
-        #        print('%d/%d'%(i,len(items)))
         if len(item) == 0:  # 存在空行
             continue
 
@@ -100,7 +97,6 @@ def get_news_pool(start_date, end_date):
             date_str)
         print('Extracting news urls at %s' % date_str)
         news_pool += get_one_page_news(page_url)
-#        print('done')
         start_date += delta
     return news_pool
 
@@ -109,22 +105,20 @@ def crawl_news(news_pool, min_body_len, doc_dir_path, doc_encoding):
     '''
     开始爬取新闻
     Args:
-        news_pool:新闻列表池
-        min_body_len:最短新闻长度限制
+        news_pool:新闻列表池[[[date_time, url, title]], [], ...]
+        min_body_len:最短新闻长度限制，短于该变量的新闻将跳过
         doc_dir_path:结果文件存储路径
         doc_encoding:结果文件编码方式
     '''
-    files = listdir(doc_dir_path)
-    i = len(files)
+    news_files_list = listdir(doc_dir_path)
+    news_file_counter = len(news_files_list)
     news_pool_len = len(news_pool)
-    for n, news in enumerate(news_pool):
-        print('%d/%d' % (n, news_pool_len))
-
+    for counter, news in enumerate(news_pool):
+        print('crawl: %d/%d news' % (counter, news_pool_len))
         req = urllib.request.Request(news[1], headers=headers)
         try:
             response = urllib.request.urlopen(req, timeout=10)
             html = response.read()
-#            response = urllib.request.urlopen(news[1])
         except socket.timeout as err:
             print('socket.timeout')
             print(err)
@@ -164,16 +158,17 @@ def crawl_news(news_pool, min_body_len, doc_dir_path, doc_encoding):
             continue
 
         doc = ET.Element("doc")
-        ET.SubElement(doc, "id").text = "%d" % (i)
+        ET.SubElement(doc, "id").text = "%d" % news_file_counter
         ET.SubElement(doc, "url").text = news[1]
         ET.SubElement(doc, "title").text = news[2]
         ET.SubElement(doc, "datetime").text = news[0]
         ET.SubElement(doc, "body").text = body
         tree = ET.ElementTree(doc)
         tree.write(doc_dir_path + "%d.xml" %
-                   (i), encoding=doc_encoding, xml_declaration=True)
-        i += 1
-        if i % 500 == 0:
+                   news_file_counter, encoding=doc_encoding, xml_declaration=True)
+        
+        news_file_counter += 1
+        if news_file_counter % 500 == 0:
             print("Sleeping for 3 minute")
             time.sleep(180)
 
@@ -186,9 +181,7 @@ if __name__ == '__main__':
     end_date = date.today()
     start_date = end_date + delta  # 5天前
     news_pool = get_news_pool(start_date, end_date)
-    news_pool = list(set(news_pool))
     print('Starting to crawl %d chinanews' % len(news_pool))
-    # doc_dir_path = config['DEFAULT']['doc_dir_path']+'chinanews/'
     crawl_news(news_pool, 140, config['DEFAULT']
                ['doc_dir_path'], config['DEFAULT']['doc_encoding'])
     print('done!')
