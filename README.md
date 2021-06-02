@@ -6,16 +6,15 @@
 2. 安装lxml html解析器，命令为`pip install lxml`
 3. 安装jieba分词组件，命令为`pip install jieba`
 4. 安装Flask Web框架，命令为`pip install Flask`
-5. 进入web文件夹，运行main.py文件
+5. 进入web文件夹，运行web_main.py文件
 6. 打开浏览器，访问http://127.0.0.1:5000/ 输入关键词开始测试
 
 如果想抓取最新新闻数据并构建索引：
 
-1. 运行爬虫`./code/spider.chinanews.com.py`爬取中国新闻网最近5天新闻；运行爬虫`./code/spider.news.xjtu.edu.cn.py`爬取交大新闻网中下新闻。
-2. 运行`./code/setup.py自动构建索引`
-3. 运行`./web/main.py`文件，或者执行`./web/run shell.txt`中的命令（网页模板`./web/templates`有修改时）
+1. 运行爬虫`./spider/spider.chinanews.com.py`爬取中国新闻网最近5天新闻；运行爬虫`./spider/spider.news.xjtu.edu.cn.py`爬取交大新闻网中下新闻。
+2. 运行`./index/index_main.py`自动构建索引，构建的索引示例详见`./data/香港df16_example.txt`
+3. 运行`./web/web_main.py`文件
 4. 打开浏览器，访问http://127.0.0.1:5000/ 输入关键词开始测试
-
 
 
 **本项目为信息系统建模的一个小作业，感谢原作者提供的代码和文档。**

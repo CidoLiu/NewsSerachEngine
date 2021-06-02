@@ -16,28 +16,29 @@ import configparser
 config = configparser.ConfigParser()
 config.read('../config.ini', 'utf-8')
 
-folder=config['DEFAULT']['doc_dir_path']
+folder = config['DEFAULT']['doc_dir_path']
 
-files=os.listdir(folder)
+files = os.listdir(folder)
 
 files = sorted(files, key=lambda x: int(os.path.splitext(x)[0]))
 
-keyword='编辑'
+keyword = '编辑'
 
-i=1
-for j,file in enumerate(files):
-    print('%d/%d'%(j,len(files)))
-    path='%s\%s'%(folder,file)
+i = 1
+for j, file in enumerate(files):
+    print('%d/%d' % (j, len(files)))
+    path = '%s\%s' % (folder, file)
 
-    tree =  ET.parse(path)
+    tree = ET.parse(path)
     root = tree.getroot()
     body = root.find('body').text
     docid = root.find('id')
     if keyword in body:
         docid.text = str(i)
-        tree.write('%s\%d.xml'%(folder,i), encoding=config['DEFAULT']['doc_encoding'])
-        i+=1
+        tree.write('%s\%d.xml' % (folder, i),
+                   encoding=config['DEFAULT']['doc_encoding'])
+        i += 1
     else:
         os.remove(path)
-        
-print('# valid files = %d'%(i-1))
+
+print('# valid files = %d' % (i-1))
