@@ -45,8 +45,8 @@ def search():
         print(keys)
         if keys not in ['']:
             print(time.process_time())
-            flag,page = searchidlist(keys)
-            if flag==0:
+            flag, page = searchidlist(keys)
+            if flag == 0:
                 return render_template('search.html', error=False)
             docs = cut_page(page, 0)
             print(time.process_time())
@@ -70,7 +70,7 @@ def searchidlist(key, selected=0):
     page = []
     for i in range(1, (len(doc_id) // 10 + 2)):
         page.append(i)
-    return flag,page
+    return flag, page
 
 
 def cut_page(page, no):
@@ -122,17 +122,17 @@ def high_search(key):
                 checked[i] = 'checked="true"'
             else:
                 checked[i] = ''
-        flag,page = searchidlist(key, selected)
-        if flag==0:
+        flag, page = searchidlist(key, selected)
+        if flag == 0:
             return render_template('search.html', error=False)
         docs = cut_page(page, 0)
-        return render_template('high_search.html',checked=checked ,key=keys, docs=docs, page=page,
+        return render_template('high_search.html', checked=checked, key=keys, docs=docs, page=page,
                                error=True)
     except:
         print('high search error')
 
 
-@app.route('/search/<id>/', methods=['GET', 'POST']) # 把函数绑定到 URL
+@app.route('/search/<id>/', methods=['GET', 'POST'])  # 把函数绑定到 URL
 def content(id):
     try:
         doc = find([id], extra=True)
@@ -146,13 +146,13 @@ def get_k_nearest(db_path, docid, k=5):
     c = conn.cursor()
     c.execute("SELECT * FROM knearest WHERE id=?", (docid,))
     docs = c.fetchone()
-    #print(docs)
+    # print(docs)
     conn.close()
     return docs[1: 1 + (k if k < 5 else 5)]  # max = 5
 
 
 if __name__ == '__main__':
     jieba.initialize()  # 手动初始化（可选）
-    app.config['TEMPLATES_AUTO_RELOAD'] = True # 重新加载模板
-    #app.run(host="0.0.0.0", port=5000) # 部署到服务器上，外网可通过服务器IP和端口访问
+    app.config['TEMPLATES_AUTO_RELOAD'] = True  # 重新加载模板
+    # app.run(host="0.0.0.0", port=5000) # 部署到服务器上，外网可通过服务器IP和端口访问
     app.run()
